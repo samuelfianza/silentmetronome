@@ -1,117 +1,172 @@
 <!doctype html>
 <html>
 <head>
-<title>Silent Metronome</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Silent Metronome</title>
 
-<style>
-	body {
-		background: #eee;
-		font-family: sans-serif;
-		color: #888;
-	}
+	<style>
+		body {
+			background: #eee;
+			font-family: sans-serif;
+			color: #555;
+			margin: 0;
+		}
+		* {
+			box-sizing: border-box;
+		}
+		.container {
+			max-width: 600px;
+			margin: auto;
+			padding-left: 20px;
+			padding-right: 20px;
+		}
+		h1 {
+			text-align: center;
+		}
+		#m-box {
+			height: 200px;
+			width: 100%;
+			border: 2px solid #888;
+			position: relative;
+			margin: 0 auto 50px auto;
+			border-radius: 10px;
+			overflow: hidden;
+			text-align: center;
+			cursor: pointer;
+		}
+		#m-counter {
+			font-size: 80px;
+			font-weight: bold;;
+			line-height: 200px;
+		}
+		#m-line {
+			background: #888;
+			width: 10px ;
+			height: 100%;
+			position: absolute;
+			top: 0;
+			left: 0;
+			/*animation-name: m-line;
+			animation-timing-function: linear;
+			animation-iteration-count: infinite;
+			animation-direction: alternate;*/
+		}
 
-	#m-box {
-		height: 200px;
-		width: 600px;
-		border: 2px solid #888;
-		position: relative;
-		margin: 100px auto 50px auto;
-		border-radius: 10px;
-		overflow: hidden;
-		text-align: center
-	}
-	#m-counter {
-		font-size: 80px;
-		font-weight: bold;;
-		line-height: 200px;
-	}
-	#m-line {
-		background: #888;
-		width: 50px ;
-		height: 100%;
-		position: absolute;
-		top: 0;
-		left: 0;
-		/*animation-name: m-line;
-		animation-timing-function: linear;
-		animation-iteration-count: infinite;
-		animation-direction: alternate;*/
-	}
+		#m-settings {
+			width: 100%;
+			margin: auto;
+			text-align: center;
+		}
+		#m-settings > div {
+			margin-bottom: 30px;
+		}
+		input {
+			width: 100%;
+			background: transparent;
+			font-size: 25px;
+			text-align: center;
+			border: 2px solid #888;
+			border-radius: 5px;
+			height: 60px;
+			font-weight: bold;
+			margin-bottom: 10px;
+			color: #555;
+		}
+		label {
+			text-align: center;
+			font-weight: bold;
+		}
 
-	#m-settings {
-		width: 600px;
-		margin: auto;
-		text-align: center;
-	}
-	#m-settings > div {
-		margin-bottom: 20px;
-	}
-	input {
-		width: 100%;
-		background: transparent;
-		font-size: 20px;
-		text-align: center;
-		border: 2px solid #888;
-		border-radius: 5px;
-		height: 50px;
-	}
-	label {
-		text-align: center;
-	}
+		@keyframes m-line {
+			from { left: 0; }
+			to { left: 100% }
+		}
 
-	@keyframes m-line {
-		from { left: 0; }
-		to { left: 100% }
-	}
+
+		@media (max-width: 768px){
+			.container {
+				width: 100%;
+			}
+		}
 
 
 
-</style>
+	</style>
 
 </head>
 
 <body>
 
+	<div class="container" style="margin-top: 5em">
+		<h1>Silent Metronome</h1>
+		<div id="m-box">
+			<div id="m-line" style="left: 0;"></div>
 
-	<div id="m-box">
-		<div id="m-line" style="left: 0;"></div>
+			<div id="m-counter">1</div>
 
-		<div id="m-counter">1</div>
-
-	</div>
-
-	<div id="m-settings">
-		<div>
-			<input type="number" placeholder="Tempo (BPM)" id="m-tempo" value="120" />
-			<label>Tempo (BPM)</label>
-		</div>
-		<div>
-			<input type="number" placeholder="Time Signature / 4" id="m-timeSignature" value="4" />
-			<label>Time Signature / 4</label>
 		</div>
 
+		<div id="m-settings">
+			<div>
+				<input type="number" placeholder="Tempo (BPM)" id="m-tempo" value="120" />
+				<label>Tempo (BPM)</label>
+			</div>
+			<div>
+				<input type="number" placeholder="Time Signature / 4" id="m-timeSignature" value="4" />
+				<label>Time Signature / 4</label>
+			</div>
+
+		</div>
 	</div>
 
 
 <script>
 	var theInterval;
+	var metronomeStarted = false;
+
+	document.getElementById("m-box").addEventListener("click", function(){
+
+
+		if(!metronomeStarted) {		
+			clearInterval(theInterval);
+			theInterval = setInterval( startMetronome, getTempo()*1000 );
+		} else {
+			stopMetronome();
+		}
+	});
+
 	document.getElementById("m-tempo").addEventListener("change", function(){
-		clearInterval(theInterval);
-		theInterval = setInterval( startMetronome, getTempo()*1000 );
+		if(metronomeStarted) {		
+			clearInterval(theInterval);
+			theInterval = setInterval( startMetronome, getTempo()*1000 );
+		} else {
+			stopMetronome();
+		}
 
 	});
 	document.getElementById("m-tempo").addEventListener("keyup", function(){
-		clearInterval(theInterval);
-		theInterval = setInterval( startMetronome, getTempo()*1000 );
+		if(metronomeStarted) {		
+			clearInterval(theInterval);
+			theInterval = setInterval( startMetronome, getTempo()*1000 );
+		} else {
+			stopMetronome();
+		}
 	});
 	document.getElementById("m-timeSignature").addEventListener("change", function(){
-
-		clearInterval(theInterval);
-		theInterval = setInterval( startMetronome, getTempo()*1000 );
+		if(metronomeStarted) {		
+			clearInterval(theInterval);
+			theInterval = setInterval( startMetronome, getTempo()*1000 );
+		} else {
+			stopMetronome();
+		}
 	});
 	document.getElementById("m-timeSignature").addEventListener("keyup", function(){
-		clearInterval(theInterval);
-		theInterval = setInterval( startMetronome, getTempo()*1000 );
+		if(metronomeStarted) {		
+			clearInterval(theInterval);
+			theInterval = setInterval( startMetronome, getTempo()*1000 );
+		} else {
+			stopMetronome();
+		}
 	});
 
 	function getTempo() {
@@ -124,18 +179,27 @@
 	}
 	function startMetronome() {
 
-
+		metronomeStarted = true;
 		startAnimateLine();
 		startCount();
 		window.navigator.vibrate([50]);
 
 	}
+
+	function stopMetronome() {
+		clearInterval(theInterval);
+		metronomeStarted = false;
+
+
+	}
+
+
 	function startAnimateLine() {
 
 		document.getElementById('m-line').style.transition = 'all ' + getTempo() + 's linear';
 
 		if( parseInt(document.getElementById('m-line').style.left) == 0 ){
-			document.getElementById('m-line').style.left = "calc(100% - 50px)";
+			document.getElementById('m-line').style.left = "calc(100% - 10px)";
 		} else {
 			document.getElementById('m-line').style.left = "0";
 		}
