@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+<head>
+<title>Silent Metronome</title>
+
+<style>
+	body {
+		background: #eee;
+		font-family: sans-serif;
+		color: #888;
+	}
+
+	#m-box {
+		height: 200px;
+		width: 600px;
+		border: 2px solid #888;
+		position: relative;
+		margin: 100px auto 50px auto;
+		border-radius: 10px;
+		overflow: hidden;
+		text-align: center
+	}
+	#m-counter {
+		font-size: 80px;
+		font-weight: bold;;
+		line-height: 200px;
+	}
+	#m-line {
+		background: #888;
+		width: 50px ;
+		height: 100%;
+		position: absolute;
+		top: 0;
+		left: 0;
+		/*animation-name: m-line;
+		animation-timing-function: linear;
+		animation-iteration-count: infinite;
+		animation-direction: alternate;*/
+	}
+
+	#m-settings {
+		width: 600px;
+		margin: auto;
+		text-align: center;
+	}
+	#m-settings > div {
+		margin-bottom: 20px;
+	}
+	input {
+		width: 100%;
+		background: transparent;
+		font-size: 20px;
+		text-align: center;
+		border: 2px solid #888;
+		border-radius: 5px;
+		height: 50px;
+	}
+	label {
+		text-align: center;
+	}
+
+	@keyframes m-line {
+		from { left: 0; }
+		to { left: 100% }
+	}
+
+
+
+</style>
+
+</head>
+
+<body>
+
+
+	<div id="m-box">
+		<div id="m-line" style="left: 0;"></div>
+
+		<div id="m-counter">1</div>
+
+	</div>
+
+	<div id="m-settings">
+		<div>
+			<input type="number" placeholder="Tempo (BPM)" id="m-tempo" value="60" />
+			<label>Tempo (BPM)</label>
+		</div>
+		<div>
+			<input type="number" placeholder="Time Signature / 4" id="m-timeSignature" value="4" />
+			<label>Time Signature / 4</label>
+		</div>
+
+	</div>
+
+
+<script>
+	var theInterval;
+	document.getElementById("m-tempo").addEventListener("change", function(){
+		clearInterval(theInterval);
+		theInterval = setInterval( startMetronome, getTempo()*1000 );
+
+	});
+	document.getElementById("m-tempo").addEventListener("keyup", function(){
+		clearInterval(theInterval);
+		theInterval = setInterval( startMetronome, getTempo()*1000 );
+	});
+	document.getElementById("m-timeSignature").addEventListener("change", function(){
+
+		clearInterval(theInterval);
+		theInterval = setInterval( startMetronome, getTempo()*1000 );
+	});
+	document.getElementById("m-timeSignature").addEventListener("keyup", function(){
+		clearInterval(theInterval);
+		theInterval = setInterval( startMetronome, getTempo()*1000 );
+	});
+
+	function getTempo() {
+		var tempo = 60 / parseInt(document.getElementById("m-tempo").value);
+		return tempo;
+	}
+	function getTimeSignature() {
+		var timeSignature = document.getElementById("m-timeSignature").value;
+		return timeSignature;
+	}
+	function startMetronome() {
+
+
+		startAnimateLine();
+		startCount();
+		window.navigator.vibrate([100]);
+
+	}
+	function startAnimateLine() {
+
+		document.getElementById('m-line').style.transition = 'all ' + getTempo() + 's linear';
+
+		if( parseInt(document.getElementById('m-line').style.left) == 0 ){
+			document.getElementById('m-line').style.left = "calc(100% - 50px)";
+		} else {
+			document.getElementById('m-line').style.left = "0";
+		}
+
+	}
+	function startCount() {
+		if( parseInt(document.getElementById('m-counter').innerText) >= getTimeSignature() ){
+			document.getElementById('m-counter').innerText = 1;
+		} else {
+			document.getElementById('m-counter').innerText = parseInt(document.getElementById('m-counter').innerText) + 1;
+		}
+		
+	}
+
+
+</script>
+
+</body>
+</html>
